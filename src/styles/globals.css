@@ -1,0 +1,57 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+@media (max-width: 1200px) {
+  .low-res-viewpoint-h1 {
+    font-size: 2.5rem;
+  }
+}
+
+@media (max-width: 815px) {
+  .low-res-viewpoint-h1 {
+    font-size: 1.75rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .low-res-viewpoint-h1 {
+    font-size: 1.25rem;
+  }
+  .low-res-viewpoint-p {
+    font-size: 0.75rem;
+  }
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.text-custom-setup {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+.text-fourline {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  -webkit-line-clamp: 4;
+  line-height: 1.5;
+  max-height: 6em;
+  white-space: normal;
+}
