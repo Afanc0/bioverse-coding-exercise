@@ -33,6 +33,9 @@
   .low-res-viewpoint-p {
     font-size: 0.75rem;
   }
+  .low-res-viewport-div {
+    justify-content: center;
+  }
 }
 
 body {
