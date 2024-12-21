@@ -1,6 +1,7 @@
+"use client"
 
 import QuestionCard from "@bioverse-intake/components/question-card"
-import { useQuestionTypes } from "@bioverse-intake/hooks/QuestionTypes"
+import { useQuestionTypes, QuestionSelectionItem } from "@bioverse-intake/hooks/QuestionTypes"
 import { BioverseLogo } from "@bioverse-intake/components/bioverse-logo"
 import React from "react"
 import Button from "@bioverse-intake/components/button"
@@ -14,7 +15,12 @@ import Button from "@bioverse-intake/components/button"
 */
 const Dashboard = () => {
 
-    const { selection, keys } = useQuestionTypes()
+    const { data, error, loading } = useQuestionTypes();
+
+    if (loading) return <p>Loading...</p>;
+    if (error) return <p>Error: {error}</p>;
+
+    const sectionKeys = data ? Object.keys(data) : [];
 
     return (
         <React.Fragment>
@@ -40,18 +46,18 @@ const Dashboard = () => {
                 <section>
                     <div className="flex justify-center items-center gap-4">
                         <div className="flex-wrap py-[72px] flex justify-center gap-[50px]">
-                            {keys.map((value) => (
-                                <QuestionCard key={value} sectionName={selection[value]} />
+                            {data != null && sectionKeys.map((value) => (
+                                <QuestionCard key={value} sectionName={data[value]} />
                             ))}
                         </div>
                     </div>
                 </section>
-                <footer>
-                    <div className="flex justify-center items-center py-8">
-                        <span className="text-gray-600">You are currently logged in as a user</span>
-                    </div>
-                </footer>
             </main>
+            <footer>
+                <div className="flex justify-center items-center py-8">
+                    <span className="text-gray-600">You are currently logged in as a user</span>
+                </div>
+            </footer>
         </React.Fragment>
     )
 }
