@@ -14,7 +14,7 @@ export const useQuestionTypes = () => {
   React.useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/questionnaire", {
+        const response = await fetch("http://192.168.1.146:3000/api/questionnaire", {
           method: 'GET',
         });
 
