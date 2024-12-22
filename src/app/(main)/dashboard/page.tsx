@@ -4,7 +4,8 @@ import QuestionCard from "@bioverse-intake/components/question-card"
 import { useQuestionTypes, QuestionSelectionItem } from "@bioverse-intake/hooks/QuestionTypes"
 import { BioverseLogo } from "@bioverse-intake/components/bioverse-logo"
 import React from "react"
-import Button from "@bioverse-intake/components/button"
+import { useRouter } from "next/navigation"
+import NavBar from "@bioverse-intake/components/navbar"
 
 /*
     UI DESIGN:
@@ -15,7 +16,25 @@ import Button from "@bioverse-intake/components/button"
 */
 const Dashboard = () => {
 
+    const router = useRouter()
+
     const { data, error, loading } = useQuestionTypes();
+
+    const navigateToQuestion = React.useCallback((id: string) => {
+        router.push(`/question/${id}`);
+    }, [])
+
+    /* Simple Auth */
+    const [authLoading, setAuthLoading] = React.useState(true)
+    React.useEffect(() => {
+        const user = localStorage.getItem("user");
+        if (user === null) {
+            router.push('/')
+        } else {
+            setAuthLoading(false)
+        }
+    }, [router])
+    if (authLoading) return null
 
     if (loading) return <p>Loading...</p>;
     if (error) return <p>Error: {error}</p>;
@@ -25,16 +44,7 @@ const Dashboard = () => {
     return (
         <React.Fragment>
             <header>
-                <div className="py-8 px-8 border-b-2 flex flex-row justify-between">
-                    <div className="flex-1">
-                        <BioverseLogo width="250"/>
-                    </div>
-                    <div className="flex-1 flex justify-end">
-                        <button className="bg-[#286ba2] rounded-full py-3 px-8 hover:bg-[#3b8fd6]">
-                            <span className="text-white text-base font-semibold">Sign Out</span>
-                        </button>
-                    </div>
-                </div>
+                <NavBar />
             </header>
             <main>
                 <section>
@@ -47,7 +57,11 @@ const Dashboard = () => {
                     <div className="flex justify-center items-center gap-4">
                         <div className="flex-wrap py-[72px] flex justify-center gap-[50px]">
                             {data != null && sectionKeys.map((value) => (
-                                <QuestionCard key={value} sectionName={data[value]} />
+                                <QuestionCard 
+                                    key={value} 
+                                    sectionName={data[value]}
+                                    onClick={() => navigateToQuestion(value)}
+                                />
                             ))}
                         </div>
                     </div>
