@@ -3,10 +3,12 @@ import Button from "../button";
 
 interface QuestionProp {
     sectionName: string;
+    onClick: () => void;
 }
 
 const QuestionCard: React.FC<QuestionProp> = ({
-    sectionName
+    sectionName,
+    onClick
 }) => {
 
     const capitalizedSectionName = sectionName.charAt(0).toUpperCase() + sectionName.slice(1);
@@ -24,7 +26,7 @@ const QuestionCard: React.FC<QuestionProp> = ({
                     <p className="text-custom-setup text-sm text-fourline text-gray-600">Click to begin and start answering the questions related to this section.</p>
                 </div>
                 <div className="mt-2 flex justify-center items-center">
-                    <Button text="Begin" />
+                    <Button text="Begin" onClick={onClick} />
                 </div>
             </div>
         </div>
