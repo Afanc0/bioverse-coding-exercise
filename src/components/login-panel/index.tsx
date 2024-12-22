@@ -21,7 +21,10 @@ const LoginPanel = () => {
 
     const router = useRouter()
 
-    const navigateToDashboard = () => router.push('/dashboard');
+    const navigateToDashboard = () => {
+        localStorage.setItem("user", userLoginRef.current?.value ?? "")
+        router.push('/dashboard')
+    }
 
     const handleSubmitForm = (e: { preventDefault: () => void }) => {
         e.preventDefault()
