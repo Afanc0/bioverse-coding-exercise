@@ -13,7 +13,7 @@ export const useGetQuestionnaireById = (id: string) => {
   React.useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`http://192.168.1.146:3000/api/quest?id=${id}`, {
+        const response = await fetch(`https://bioverse-coding-exercise.vercel.app/api/quest?id=${id}`, {
           method: 'GET',
         })
 

@@ -16,7 +16,7 @@ export const useGetAnswersByUser = (user: string) => {
   React.useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`http://192.168.1.146:3000/api/answer?user=${user}`, {
+        const response = await fetch(`https://bioverse-coding-exercise.vercel.app/api/answer?user=${user}`, {
           method: 'GET',
         });
 

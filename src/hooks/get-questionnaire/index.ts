@@ -15,7 +15,7 @@ export const useGetQuestionnaire = () => {
   React.useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("http://192.168.1.146:3000/api/questionnaire", {
+        const response = await fetch("https://bioverse-coding-exercise.vercel.app/api/questionnaire", {
           method: 'GET',
         });
 

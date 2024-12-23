@@ -6,7 +6,7 @@ export const useAddQuestionEntries = () => {
 
   const addResponses = async (user: string, filledForm: Record<number, any>, id: number[], questionnaireId: string, name: string) => {
     try {
-      const response = await fetch(`http://192.168.1.146:3000/api/question`, {
+      const response = await fetch(`https://bioverse-coding-exercise.vercel.app/api/question`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
