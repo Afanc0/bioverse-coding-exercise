@@ -3,15 +3,18 @@ import { MongoClient } from 'mongodb'
 const uri = 'mongodb://localhost:27017/bioverse'
 const client = new MongoClient(uri)
 
-export async function GET(_request: Request): Promise<Response> {
+export async function GET(request: Request): Promise<Response> {
     try {
+        const url = new URL(request.url)
+        const user = url.searchParams.get('user')
+
         await client.connect()
         const database = client.db('bioverse') 
-        const questionnaireCollection = database.collection('questionnaire') 
+        const answerCollection = database.collection('answers') 
 
-        const questionnaire = await questionnaireCollection.find({}).toArray()
+        const answers = await answerCollection.find({user: user}).toArray()
 
-        return new Response(JSON.stringify(questionnaire), {
+        return new Response(JSON.stringify(answers), {
             status: 200,
             headers: { 
             'Content-Type': 'application/json',

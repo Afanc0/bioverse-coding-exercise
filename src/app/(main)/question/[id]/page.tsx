@@ -3,8 +3,11 @@
 import NavBar from '@bioverse-intake/components/navbar';
 import { useParams, useRouter } from 'next/navigation';
 import { FormInput, FormRadio }from '@bioverse-intake/components/form-options';
-import { useGetQuestionsById } from '@bioverse-intake/hooks/Questions';
+import { useGetQuestionsById } from '@bioverse-intake/hooks/use-get-questionbyid';
 import React from 'react';
+import { useAddQuestionEntries } from '@bioverse-intake/hooks/add-question-entries';
+import { useGetAnswersByUser } from '@bioverse-intake/hooks/get-answersbyuser';
+import { useGetQuestionnaireById } from '@bioverse-intake/hooks/get-questionnairebyid';
 
 
 type Question = {
@@ -14,46 +17,35 @@ type Question = {
     question: string
 }
 
-/*
-    TODO:
-        If a question has been previously answered on another questionnaire, pre-
-populate the answer for the question.
-
-        Create Entry
-
-        Selecting and then unselecting radio passes fix [DONE]
- 
-        Two text box questions causes text to translate [DONE]
-*/
-
 const Question = () => {
 
     const params = useParams()
     const id = params.id as string
-
     const router = useRouter()
-
-    const {data, error, loading} = useGetQuestionsById(id)
+    const user = React.useMemo(() => localStorage.getItem("user"), [])
+    const { data, error, loading } = useGetQuestionsById(id)
+    const { data: userAnswerData, loading: loadingAnswers, error: errorAnswers } = useGetAnswersByUser(user ?? "")
+    const { data: questData, loading: loadingQuest, error: errorQuest } = useGetQuestionnaireById(id)
+    const { addResponses } = useAddQuestionEntries()
+    
     const [currentQuestionIndex, setCurrentQuestionIndex] = React.useState(0)
-
     const questions = data || []
+    const questionIds = questions.map((val: { _id: any; }) => val._id)
     const currentQuestion = questions[currentQuestionIndex]
-
     const [form, setForm] = React.useState<Record<number, any>>({})
+    const formPopulated = React.useRef<Record<number, boolean>>({})
 
-    const handleQuestionNavigation = React.useCallback((type: string) => {
-        console.log(form, currentQuestionIndex)
+    const handleQuestionNavigation = React.useCallback(async (type: string) => {
         const currentAnswer = form[currentQuestionIndex]
         if (!currentAnswer || (currentAnswer.length == 0) || (currentQuestion.type === "input" && !/\S/.test(currentAnswer))) {
-            console.log(form, currentQuestionIndex)
-            alert("Answer the question completely!");
+            alert("Answer the question completely!")
             return;
         }
         if (type === "normal") {
             setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
         } else if (type === "submit") {
-            /* Create Entry */
-            router.push('/dashboard');
+            await addResponses(localStorage.getItem('user') ?? "", form, questionIds, id, questData ?? "")
+            router.push('/dashboard')
         }
     }, [currentQuestionIndex, form])
 
@@ -65,11 +57,24 @@ const Question = () => {
                     [currentQuestionIndex]: value,
                 };
                 return updatedForm;
-            });
+            })
         },
         [currentQuestionIndex, form]
     )
 
+    React.useEffect(() => {
+        if (userAnswerData && currentQuestionIndex < questionIds.length) {
+            const currentQuestionId = questionIds[currentQuestionIndex]
+            const existingAnswer = userAnswerData[0]?.answers[currentQuestionId];
+
+            if (existingAnswer && !formPopulated.current[currentQuestionIndex]) {
+                populateForm(existingAnswer.answer)
+                formPopulated.current[currentQuestionIndex] = true
+            }
+        }
+    }, [currentQuestionIndex, userAnswerData, questionIds, form, populateForm]);
+
+    
     /* Simple Auth */
     const [authLoading, setAuthLoading] = React.useState(true)
     React.useEffect(() => {
@@ -82,8 +87,8 @@ const Question = () => {
     }, [router])
     if (authLoading) return null
 
-    if (loading) return <p>Loading...</p>
-    if (error) return <p>Error: {error}</p>
+    if (loading || loadingAnswers) return <p>Loading...</p>
+    if (error || errorAnswers) return <p>Error: {error ?? errorAnswers}</p>
 
     return (
         <React.Fragment>
@@ -92,7 +97,8 @@ const Question = () => {
             </header>
             <main>
                 <section>
-                    <div className="flex justify-center items-center py-16">
+                    <div className="flex justify-center items-center py-16 flex-col">
+                        
                         <div className="px-6">
                             {currentQuestion.type === "mcq" ? (
                                 <FormRadio

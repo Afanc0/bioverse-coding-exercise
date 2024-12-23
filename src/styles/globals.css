@@ -36,7 +36,14 @@
   .low-res-viewport-div {
     justify-content: center;
   }
+  .low-res-appear {
+    display: flex;
+  }
+  .low-res-disappear {
+    display: none;
+  }
 }
+
 
 body {
   font-family: Arial, Helvetica, sans-serif;

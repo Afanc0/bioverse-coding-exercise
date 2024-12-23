@@ -2,12 +2,13 @@
 
 import React from "react";
 
-export type QuestionSelectionItem = {
-  [id: string]: string;
-};
+export interface Questionnaire {
+  _id: number;
+  value: string;
+}
 
-export const useQuestionTypes = () => {
-  const [data, setData] = React.useState<QuestionSelectionItem | null>(null);
+export const useGetQuestionnaire = () => {
+  const [data, setData] = React.useState<Questionnaire[] | null>(null);
   const [error, setError] = React.useState<string | null>(null);
   const [loading, setLoading] = React.useState<boolean>(true);
 

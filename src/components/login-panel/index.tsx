@@ -21,9 +21,15 @@ const LoginPanel = () => {
 
     const router = useRouter()
 
-    const navigateToDashboard = () => {
+    const navigateToDashboard = (level: number) => {
         localStorage.setItem("user", userLoginRef.current?.value ?? "")
-        router.push('/dashboard')
+        localStorage.setItem("level", level.toString() ?? "0")
+
+        if (level.toString() === "1") {
+            router.push('/admin')
+        } else {
+            router.push('/dashboard')
+        }
     }
 
     const handleSubmitForm = (e: { preventDefault: () => void }) => {
@@ -36,7 +42,7 @@ const LoginPanel = () => {
             const userData = data[loginValue]
             if (userData.password === passwordValue) {
               console.log("Login successful")
-              navigateToDashboard()
+              navigateToDashboard(userData.privileges)
             } else {
               console.log("Incorrect password")
             }

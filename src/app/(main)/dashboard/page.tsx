@@ -1,8 +1,7 @@
 "use client"
 
 import QuestionCard from "@bioverse-intake/components/question-card"
-import { useQuestionTypes, QuestionSelectionItem } from "@bioverse-intake/hooks/QuestionTypes"
-import { BioverseLogo } from "@bioverse-intake/components/bioverse-logo"
+import { useGetQuestionnaire, Questionnaire } from "@bioverse-intake/hooks/get-questionnaire"
 import React from "react"
 import { useRouter } from "next/navigation"
 import NavBar from "@bioverse-intake/components/navbar"
@@ -18,9 +17,9 @@ const Dashboard = () => {
 
     const router = useRouter()
 
-    const { data, error, loading } = useQuestionTypes();
+    const { data, error, loading } = useGetQuestionnaire();
 
-    const navigateToQuestion = React.useCallback((id: string) => {
+    const navigateToQuestion = React.useCallback((id: number) => {
         router.push(`/question/${id}`);
     }, [])
 
@@ -39,7 +38,7 @@ const Dashboard = () => {
     if (loading) return <p>Loading...</p>;
     if (error) return <p>Error: {error}</p>;
 
-    const sectionKeys = data ? Object.keys(data) : [];
+    const sectionKeys: Questionnaire[] = data ?? [];
 
     return (
         <React.Fragment>
@@ -56,11 +55,11 @@ const Dashboard = () => {
                 <section>
                     <div className="flex justify-center items-center gap-4">
                         <div className="flex-wrap py-[72px] flex justify-center gap-[50px]">
-                            {data != null && sectionKeys.map((value) => (
+                            {sectionKeys.map((value) => (
                                 <QuestionCard 
-                                    key={value} 
-                                    sectionName={data[value]}
-                                    onClick={() => navigateToQuestion(value)}
+                                    key={value._id} 
+                                    sectionName={value.value}
+                                    onClick={() => navigateToQuestion(value._id)}
                                 />
                             ))}
                         </div>

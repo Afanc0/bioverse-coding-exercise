@@ -2,5 +2,13 @@
     "testuser@gobioverse.com" : {
         "password": "password",
         "privileges": 0
+    },
+    "testuser2@gobioverse.com" : {
+        "password": "password",
+        "privileges": 0
+    },
+    "admin@gobioverse.com" : {
+        "password": "root",
+        "privileges": 1
     }
 }

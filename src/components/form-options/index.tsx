@@ -15,12 +15,12 @@ const FormInput: React.FC<FormInput> = ({
 
     const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         onChange(e.target.value)
-        e.target.value = ""
     };
 
     return (
         <div className="flex flex-col gap-4">
             <label className="mb-2 text-lg">
+                <span className="text-[#286ba2] font-bold">Required: </span>
                 {question}
             </label>
             <textarea
@@ -75,7 +75,10 @@ const FormRadio: React.FC<FormRadio> = ({
 
     return (
         <div className="flex flex-col gap-4">
-            <label className="mb-2 text-lg">{question}</label>
+            <label className="mb-2 text-lg">
+                <span className="text-[#286ba2] font-bold">Required: </span>
+                {question}
+            </label>
             {options.map((option, index) => (
                 <div key={index} className="flex items-center mb-3">
                     <input

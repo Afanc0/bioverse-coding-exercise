@@ -1,5 +1,14 @@
-{
-    "1": "semaglutide",
-    "2": "nad-injection",
-    "3": "metformin"
-}
+[
+    {
+      "_id": "1",
+      "value": "semaglutide"
+    },
+    {
+      "_id": "2",
+      "value": "nad-injection"
+    },
+    {
+      "_id": "3",
+      "value": "metformin"
+    }
+]
