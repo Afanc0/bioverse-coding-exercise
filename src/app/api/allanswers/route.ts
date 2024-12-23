@@ -1,16 +1,12 @@
-import { MongoClient } from 'mongodb'
-
-const uri = 'mongodb://localhost:27017/bioverse'
-const client = new MongoClient(uri)
+import { connectToDatabase } from '@bioverse-intake/lib/mongodb'
 
 export async function GET(request: Request): Promise<Response> {
     try {
         const url = new URL(request.url)
         const user = url.searchParams.get('user')
 
-        await client.connect()
-        const database = client.db('bioverse') 
-        const answerCollection = database.collection('answers') 
+        const { db } = await connectToDatabase();
+        const answerCollection = db.collection('answers') 
 
         const answers = await answerCollection.find().toArray()
 

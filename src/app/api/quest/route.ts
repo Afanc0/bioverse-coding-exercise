@@ -1,12 +1,10 @@
-import { MongoClient } from 'mongodb';
+import { connectToDatabase } from '@bioverse-intake/lib/mongodb'
 
 type Questionnaire = {
     _id: number;
     value: string;
 };
 
-const uri = 'mongodb://localhost:27017/bioverse';
-const client = new MongoClient(uri);
 
 const headers = {
     'Content-Type': 'application/json',
@@ -26,10 +24,8 @@ export async function GET(request: Request): Promise<Response> {
     }
 
     try {
-        await client.connect();
-
-        const database = client.db('bioverse');
-        const questionnaireCollection = database.collection<Questionnaire>('questionnaire');
+        const { db } = await connectToDatabase();
+        const questionnaireCollection = db.collection<Questionnaire>('questionnaire');
         const questionnaireName = await questionnaireCollection.findOne({ _id: idNum });
 
         if (!questionnaireName) {

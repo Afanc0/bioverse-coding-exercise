@@ -1,21 +1,18 @@
-import { MongoClient } from 'mongodb'
+import { connectToDatabase } from '@bioverse-intake/lib/mongodb'
 
 type Question = {
-    _id: number,
+    _id: string,
     type: string,
     question?: string,
     options?: string[]
 }
 
 type Junction = {
-    _id: number,
-    question_id: number,
-    questionnaire_id: number,
-    priority: number
+    _id: string,
+    question_id: string,
+    questionnaire_id: string,
+    priority: string
 }
-
-const uri = 'mongodb://localhost:27017/bioverse'
-const client = new MongoClient(uri)
 
 const headers = {
     'Content-Type': 'application/json',
@@ -31,9 +28,8 @@ const postHeaders = {
 export async function GET(request: Request): Promise<Response> {
     const url = new URL(request.url)
     const questionId = url.searchParams.get('question')
-    const questionIdNum = questionId ? parseInt(questionId) : NaN
 
-    if (isNaN(questionIdNum)) {
+    if (questionId === null) {
         return new Response(
             JSON.stringify({ message: 'Error: Invalid or missing question parameter' }),
             { status: 400, headers }
@@ -41,14 +37,14 @@ export async function GET(request: Request): Promise<Response> {
     }
 
     try {
-        await client.connect()
+        
+        const { db } = await connectToDatabase();
 
-        const database = client.db('bioverse')
-        const junctionCollection = database.collection<Junction>('junction')
-        const questionCollection = database.collection<Question>('questions')
+        const junctionCollection = db.collection<Junction>('junction')
+        const questionCollection = db.collection<Question>('questions')
 
         const filteredData: Junction[] = await junctionCollection
-            .find({ questionnaire_id: questionIdNum })
+            .find({ questionnaire_id: questionId })
             .sort({ priority: -1 })
             .toArray()
 
@@ -85,11 +81,10 @@ export async function POST(request: Request): Promise<Response> {
             )
         }
 
-        await client.connect()
-        const database = client.db('bioverse')
+        const { db } = await connectToDatabase();
 
-        const questionCollection = database.collection<Question>('questions')
-        const answersCollection = database.collection('answers');
+        const questionCollection = db.collection<Question>('questions')
+        const answersCollection = db.collection('answers');
 
         
         const existingAnswersDoc = await answersCollection.findOne({ user })
