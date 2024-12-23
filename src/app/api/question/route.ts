@@ -76,91 +76,82 @@ export async function GET(request: Request): Promise<Response> {
 
 export async function POST(request: Request): Promise<Response> {
     try {
-        const { user, filledForm, questionIds, questionnaireId, name } = await request.json();
+        const { user, filledForm, questionIds, questionnaireId, name } = await request.json()
 
-        // Check if required fields are provided
         if (!user || !filledForm || !questionIds || !Array.isArray(questionIds) || !questionnaireId || !name) {
             return new Response(
                 JSON.stringify({ message: 'Missing or invalid required fields' }),
                 { status: 400, headers: postHeaders }
-            );
+            )
         }
 
-        // Connect to the database
-        await client.connect();
-        const database = client.db('bioverse');
+        await client.connect()
+        const database = client.db('bioverse')
 
-        const questionCollection = database.collection<Question>('questions');
+        const questionCollection = database.collection<Question>('questions')
         const answersCollection = database.collection('answers');
 
-        // Retrieve the existing answers and questionnaire data
-        const existingAnswersDoc = await answersCollection.findOne({ user });
-        const existingAnswers = existingAnswersDoc?.answers || {}; // Keep existing answers intact
-        const existingQuestionnaires = existingAnswersDoc?.questionnaire || {}; // Get existing questionnaire data
+        
+        const existingAnswersDoc = await answersCollection.findOne({ user })
+        const existingAnswers = existingAnswersDoc?.answers || {}
+        const existingQuestionnaires = existingAnswersDoc?.questionnaire || {} 
 
-        // Retrieve the questions from the database based on the provided question IDs
         const questions = await questionCollection
             .find({ _id: { $in: questionIds } })
-            .toArray();
+            .toArray()
 
-        // Prepare the new answers based on the filled form and question IDs
-        const newAnswers: Record<string, any> = {};
+        const newAnswers: Record<string, any> = {}
 
         questionIds.forEach((q_id, index) => {
-            const question = questions.find((q) => q._id === q_id);
+            const question = questions.find((q) => q._id === q_id)
             if (question) {
                 newAnswers[q_id] = {
                     question: question.question,
                     answer: filledForm[index],
-                };
+                }
             }
-        });
+        })
 
-        // Preserve existing answers while adding the new ones
-        const mergedAnswers = { ...existingAnswers, ...newAnswers };
+        const mergedAnswers = { ...existingAnswers, ...newAnswers }
 
-        // Update the questionnaire field with the new answers
-        const updatedQuestionnaires = { ...existingQuestionnaires };
+        const updatedQuestionnaires = { ...existingQuestionnaires }
 
-        // If the questionnaire already exists, update it with the new answers
         if (updatedQuestionnaires[questionnaireId]) {
-            // Ensure the name is set if not already present
             if (!updatedQuestionnaires[questionnaireId].name) {
-                updatedQuestionnaires[questionnaireId].name = name;
+                updatedQuestionnaires[questionnaireId].name = name
             }
             updatedQuestionnaires[questionnaireId] = {
                 ...updatedQuestionnaires[questionnaireId],
                 ...newAnswers,
             };
         } else {
-            // Otherwise, create a new entry for the questionnaire with the answers and name
+            
             updatedQuestionnaires[questionnaireId] = {
                 ...newAnswers,
-                name, // Add the name
-            };
+                name, 
+            }
         }
 
-        // Update the document in the database, ensuring both answers and questionnaire fields are set
         await answersCollection.updateOne(
             { user },
             {
                 $set: {
-                    answers: mergedAnswers, // Keep existing answers and add the new ones
-                    questionnaire: updatedQuestionnaires, // Update the questionnaire field with the new answers
+                    answers: mergedAnswers, 
+                    questionnaire: updatedQuestionnaires, 
                 },
             },
-            { upsert: true } // Create the document if it doesn't exist
+            { upsert: true } 
         );
 
         return new Response(
             JSON.stringify({ message: 'Answers successfully saved' }),
             { status: 200, headers: postHeaders }
-        );
+        )
     } catch (error) {
-        console.error('Error saving answers:', error);
+        console.error('Error saving answers:', error)
         return new Response(
             JSON.stringify({ message: 'An error occurred while saving answers' }),
             { status: 500, headers: postHeaders }
-        );
+        )
     }
 }
