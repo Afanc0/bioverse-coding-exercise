@@ -126,7 +126,7 @@ const Admin: React.FC = () => {
                       .map(([key, value]: [string, any], index) => (
                         <div key={index} className="px-4">
                           <h1>Q: {value.question}</h1>
-                          <h1>A: {value.answer}</h1>
+                          <h1>A: {Array.isArray(value.answer) ? value.answer.join(', ') : value.answer}</h1>
                         </div>
                       ))}
                     </div>
