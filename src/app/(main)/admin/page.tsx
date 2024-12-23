@@ -22,13 +22,12 @@ import { useGetAllAnswers } from "@bioverse-intake/hooks/get-allanswer";
 const Admin: React.FC = () => {
   const router = useRouter()
 
-  const user = React.useMemo(() => localStorage.getItem("user"), [])
   const { data, error, loading } = useGetAllAnswers()
 
-  const [isModalOpen, setIsModalOpen] = React.useState(false);
-  const [modalData, setModalData] = React.useState<any>(null);
+  const [isModalOpen, setIsModalOpen] = React.useState(false)
+  const [modalData, setModalData] = React.useState<any>(null)
 
-  const [questionnaires, setQuestionnaires] = React.useState<any[]>([]);
+  const [questionnaires, setQuestionnaires] = React.useState<any[]>([])
 
   const handleRowClick = (rowData: any) => {
     setModalData(rowData)
@@ -37,15 +36,15 @@ const Admin: React.FC = () => {
   };
 
   const closeModal = () => {
-    setIsModalOpen(false);
-    setModalData(null);
+    setIsModalOpen(false)
+    setModalData(null)
   };
 
   /* Simple Auth */
   const [authLoading, setAuthLoading] = React.useState(true)
   React.useEffect(() => {
-    const user = localStorage.getItem("user");
-    const level = localStorage.getItem("level");
+    const user = localStorage.getItem("user")
+    const level = localStorage.getItem("level")
     if (user === null) {
         router.push('/')
     } else {
@@ -147,5 +146,5 @@ const Admin: React.FC = () => {
   )
 }
 
-export default Admin;
+export default Admin
 
